@@ -36,6 +36,39 @@
                     <li><a href="#">Historique</a></li>
                 </ul>
             </li>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-industry"></i>
+                    <span>Marque</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href="pages/marque/insert.jsp">Nouvelle marque</a></li>
+                    <li><a href="marqueServlet">Liste des marques</a></li>
+                </ul>
+            </li>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-tag"></i>
+                    <span>Modele</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href=<%= request.getContextPath()+"/modeleServlet"%>>Nouveau modele</a></li>
+                    <li><a href=<%= request.getContextPath()+"/modeleListServlet"%>>Liste des modeles</a></li>
+                </ul>
+            </li>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-desktop"></i>
+                    <span>Ordinateur</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href=<%= request.getContextPath()+"/ordinateurServlet"%>>Nouvel ordinateur</a></li>
+                    <li><a href=<%= request.getContextPath()+"/ordinateurListServlet"%>>Liste des ordinateurs</a></li>
+                </ul>
+            </li>
 
             <li class="nav-item has-submenu">
                 <a href="#" class="nav-link">

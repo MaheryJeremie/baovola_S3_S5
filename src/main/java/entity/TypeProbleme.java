@@ -42,7 +42,7 @@ public class TypeProbleme {
         if (conn==null){
             conn= DatabaseConnection.connect();
         }
-        String sql = "SELECT * FROM TypeProbleme ";
+        String sql = "SELECT * FROM TypeProbleme";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ResultSet rs = ps.executeQuery();

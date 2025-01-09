@@ -2,6 +2,11 @@ CREATE TABLE Marque (
                         id SERIAL PRIMARY KEY,
                         nom VARCHAR(255) NOT NULL
 );
+CREATE TABLE Modele(
+                        id SERIAL PRIMARY KEY,
+                        nom VARCHAR(255) NOT NULL,
+                        marque_id INT REFERENCES Marque(id)
+);
 
 CREATE TABLE TypeOrdinateur (
                       id SERIAL PRIMARY KEY,
@@ -17,7 +22,7 @@ CREATE TABLE Ordinateur (
                           id SERIAL PRIMARY KEY,
                           marque_id INT REFERENCES Marque(id),
                           type_id INT REFERENCES TypeOrdinateur(id),
-                          modele VARCHAR(255) NOT NULL,
+                          modele_id INT REFERENCES Modele(id),
                           date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

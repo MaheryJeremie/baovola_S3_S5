@@ -27,6 +27,7 @@ public class ListeOrdinateurServlet extends HttpServlet {
                 conn = DatabaseConnection.connect();
                 List<Ordinateur> listeOrdinateurs = Reparation.listeOrdiByProbleme(conn, idProbleme);
                 List<TypeProbleme> listeProblemes = TypeProbleme.getAll(conn);
+                request.setAttribute("selected",idProblemeParam);
                 request.setAttribute("listeProblemes", listeProblemes);
                 request.setAttribute("listeOrdinateurs", listeOrdinateurs);
                 request.getRequestDispatcher("pages/reparation/liste.jsp").forward(request, response);

@@ -1,8 +1,8 @@
 <%@ page import="java.util.List" %>
-<%@ page import="entity.TypeProbleme" %>
-<%@ page import="entity.Ordinateur" %>
-<%@ page import="java.util.HashSet" %>
+<%@ page import="entity.Modele" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
+<%@ page import="entity.Marque" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        h1{
+            margin-bottom: 10px;
+        }
         /* Table Styles */
         .table-header {
             display: flex;
@@ -187,19 +190,39 @@
                     <li><a href="marqueServlet">Liste des marques</a></li>
                 </ul>
             </li>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-tag"></i>
+                    <span>Modele</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href=<%= request.getContextPath()+"/modeleServlet"%>>Nouveau modele</a></li>
+                    <li><a href=<%= request.getContextPath()+"/modeleListServlet"%>>Liste des modeles</a></li>
+                </ul>
+            </li>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-desktop"></i>
+                    <span>Ordinateur</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <ul class="submenu">
+                    <li><a href=<%= request.getContextPath()+"/ordinateur"%>>Nouvel ordinateur</a></li>
+                    <li><a href=<%= request.getContextPath()+"/ordinateurListServlet"%>>Liste des ordinateurs</a></li>
+                </ul>
+            </li>
 
             <li class="nav-item has-submenu">
-                <a href="#" class="nav-link" active>
+                <a href="#" class="nav-link">
                     <i class="fas fa-tools"></i>
                     <span>Réparations</span>
                     <i class="fas fa-chevron-right"></i>
                 </a>
                 <ul class="submenu">
-                    <ul class="submenu">
-                        <li><a href="insert.html">Nouvelle réparation</a></li>
-                        <li><a href="typeProbleme">Liste ordinateur par probleme</a></li>
-                        <li><a href="liste.html">Historique</a></li>
-                    </ul>
+                    <li><a href="insert.html">Nouvelle réparation</a></li>
+                    <li><a href="typeProbleme">Liste ordinateur par probleme</a></li>
+                    <li><a href="liste.html">Historique</a></li>
 
                 </ul>
             </li>
@@ -233,75 +256,46 @@
     </nav>
 
     <main class="main-content">
-        <% List<TypeProbleme> listeProblemes = (List<TypeProbleme>) request.getAttribute("listeProblemes"); %>
-        <% List<Ordinateur> listeOrdinateurs = (List<Ordinateur>) request.getAttribute("listeOrdinateurs"); %>
+        <% List<Modele> modeles = (List<Modele>) request.getAttribute("modeles"); %>
 
         <section>
-            <h1>Liste des ordinateurs par probleme</h1>
+            <h1>Liste des modeles</h1>
             <header class="top-bar">
                 <div class="search-bar">
-                    <i class="fas fa-filter"></i>
-                    <form action="listeOrdinateur" method="get" class="filters">
-                        <div>
-                            <select name="idProbleme" id="searchCategory">
-                                <option value="">Tous</option>
-                                <%
-                                    String selected = (String) request.getAttribute("selected");
-                                    for (TypeProbleme type : listeProblemes) {
-                                %>
-                                <option value="<%= type.getId() %>" <%= (selected != null && selected.equals(String.valueOf(type.getId()))) ? "selected" : "" %>>
-                                    <%= type.getNom() %>
-                                </option>
-                                <% } %>
-                            </select>
-
-                        </div>
-
-                        <button type="submit">Filtrer</button>
-                    </form>
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher..." oninput="filterTable()">
                 </div>
             </header>
 
             <div class="dashboard-content">
                 <div class="table-container">
-                    <table class="repair-table">
+                    <table class="repair-table" id="repairTable">
                         <thead>
                         <tr>
-                            <th>Modele</th>
+                            <th>id</th>
                             <th>Marque :
                                 <%
-                                    Set<String> marques = new HashSet<>();
-                                    Set<String> types=new HashSet<>();
-                                    for (Ordinateur o : listeOrdinateurs) {
-                                        marques.add(o.getMarque().getNom());
-                                        types.add(o.getTypeOrdinateur().getNom());
+                                    Set<String> marqueSet = new HashSet<>();
+                                    for (Modele m : modeles) {
+                                        marqueSet.add(m.getMarque().getNom());
                                     }
                                 %>
                                 <select id="filterBrand" class="filterMarque" onchange="applyColumnFilter('filterBrand', 1)">
                                     <option value="">Filtrer</option>
-                                    <% for (String marque : marques) { %>
+                                    <% for (String marque : marqueSet) { %>
                                     <option value="<%= marque %>"><%= marque %></option>
                                     <% } %>
                                 </select>
                             </th>
-                            <th>Type :
-                                <select id="filterType" class="filterMarque" onchange="applyColumnFilter('filterType', 2)">
-                                    <option value="">Filtrer</option>
-                                    <% for (String type : types) { %>
-                                    <option value="<%= type %>"><%= type %></option>
-                                    <% } %>
-                                </select>
-                            </th>
-                            <th>Date</th>
+                            <th>Nom</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <% for(Ordinateur o : listeOrdinateurs){ %>
+                        <% for(Modele m : modeles){ %>
                         <tr>
-                            <td><%=o.getModele().getNom()%></td>
-                            <td><%=o.getMarque().getNom()%></td>
-                            <td><%= o.getTypeOrdinateur().getNom() %></td>
-                            <td><%= o.getDateAjout() %></td>
+                            <td><%= m.getId() %></td>
+                            <td><%= m.getMarque().getNom() %></td>
+                            <td><%= m.getNom() %></td>
                         </tr>
                         <% } %>
                         </tbody>
@@ -311,22 +305,42 @@
     </main>
 </div>
 <script>
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("repairTable");
+        const trs = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < trs.length; i++) { // Start from 1 to skip header row
+            const tds = trs[i].getElementsByTagName("td");
+            let match = false;
+
+            for (let j = 0; j < tds.length; j++) {
+                const td = tds[j];
+                if (td) {
+                    if (td.textContent.toUpperCase().indexOf(filter) > -1) {
+                        match = true;
+                        break;
+                    }
+                }
+            }
+
+            trs[i].style.display = match ? "" : "none";
+        }
+    }
     function applyColumnFilter(selectId, columnIndex) {
         const filterBrandValue = document.getElementById("filterBrand").value.toLowerCase();
-        const filterTypeValue = document.getElementById("filterType").value.toLowerCase();
         const table = document.querySelector(".repair-table");
         const rows = table.querySelectorAll("tbody tr");
 
         rows.forEach(row => {
             const brandCell = row.cells[1].textContent.toLowerCase();
-            const typeCell = row.cells[2].textContent.toLowerCase();
 
             const isBrandMatch = filterBrandValue === "" || brandCell === filterBrandValue;
-            const isTypeMatch = filterTypeValue === "" || typeCell === filterTypeValue;
 
-            // Afficher la ligne seulement si les deux filtres sont appliqués correctement
-            row.style.display = (isBrandMatch && isTypeMatch) ? "" : "none";
+            row.style.display = (isBrandMatch) ? "" : "none";
         });
+
     }
 </script>
 </body>

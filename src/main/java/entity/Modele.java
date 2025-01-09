@@ -2,22 +2,34 @@ package entity;
 
 import util.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Marque {
+public class Modele {
     private int id;
     private String nom;
+    private Marque marque;
 
-    public Marque() {}
-    public Marque(String nom){
-        this.nom = nom ;
+    public Modele() {
     }
 
-    public Marque(int id, String nom) {
+    public Modele(String nom) {
+        this.nom = nom;
+    }
+
+    public Modele(int id, String nom) {
         this.id = id;
         this.nom = nom;
+    }
+
+    public Modele(int id, String nom, Marque marque) {
+        this.id = id;
+        this.nom = nom;
+        this.marque = marque;
     }
 
     public int getId() {
@@ -36,17 +48,26 @@ public class Marque {
         this.nom = nom;
     }
 
-    public void create(Connection conn) throws SQLException {
+    public Marque getMarque() {
+        return marque;
+    }
+
+    public void setMarque(Marque marque) {
+        this.marque = marque;
+    }
+
+    public void create(Connection conn,int marqueId) throws SQLException {
         if (conn==null){
             conn= DatabaseConnection.connect();
         }
 
-        String sql = "INSERT INTO Marque (nom) VALUES (?)";
+        String sql = "INSERT INTO Modele (nom,marque_id) VALUES (?,?)";
         PreparedStatement ps=null;
 
         try{
             ps = conn.prepareStatement(sql);
             ps.setString(1, getNom());
+            ps.setInt(2,marqueId);
             ps.executeUpdate();
         }
         catch (Exception e){
@@ -58,21 +79,52 @@ public class Marque {
             }
         }
     }
-    public static List<Marque> getAll(Connection conn) throws SQLException{
+    public static List<Modele> getAll(Connection conn) throws SQLException{
         if (conn==null){
             conn=DatabaseConnection.connect();
         }
-        List<Marque> marques=new ArrayList<>();
-        String sql="SELECT * FROM Marque";
+        List<Modele> modeles=new ArrayList<>();
+        String sql="SELECT * FROM Modele";
         PreparedStatement ps=null;
         ResultSet rs=null;
         try{
             ps=conn.prepareStatement(sql);
             rs=ps.executeQuery();
             while(rs.next()){
-                marques.add(new Marque(rs.getInt("id"), rs.getString("nom")));
+                Marque m=Marque.getById(conn,rs.getInt("marque_id"));
+                modeles.add(new Modele(rs.getInt("id"), rs.getString("nom"),m));
             }
-            return marques;
+            return modeles;
+        }
+        catch (Exception e){
+            throw e;
+        }
+        finally {
+            if (rs!=null){
+                ps.close();
+            }
+            if (ps!=null){
+                ps.close();
+            }
+        }
+    }
+    public static List<Modele> getAllModeleByMarque(Connection conn,int marqueId) throws SQLException{
+        if (conn==null){
+            conn=DatabaseConnection.connect();
+        }
+        List<Modele> modeles=new ArrayList<>();
+        String sql="SELECT * FROM Modele where marque_id=?";
+        PreparedStatement ps=null;
+        ResultSet rs=null;
+        try{
+            ps=conn.prepareStatement(sql);
+            ps.setInt(1, marqueId);
+            rs=ps.executeQuery();
+            while(rs.next()){
+                Marque m=Marque.getById(conn,rs.getInt("marque_id"));
+                modeles.add(new Modele(rs.getInt("id"), rs.getString("nom"),m));
+            }
+            return modeles;
         }
         catch (Exception e){
             throw e;
@@ -87,16 +139,17 @@ public class Marque {
         }
     }
 
-    public static Marque getById(Connection conn, int id) throws SQLException {
+    public static Modele getById(Connection conn, int id) throws SQLException {
         if (conn==null){
             conn= DatabaseConnection.connect();
         }
-        String sql = "SELECT * FROM Marque WHERE id = ?";
+        String sql = "SELECT * FROM Modele WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Marque(rs.getInt("id"), rs.getString("nom"));
+                Marque marque=Marque.getById(conn,rs.getInt("marque_id"));
+                return new Modele(rs.getInt("id"), rs.getString("nom"),marque);
             }
         }
         return null;
@@ -145,4 +198,3 @@ public class Marque {
         }
     }
 }
-

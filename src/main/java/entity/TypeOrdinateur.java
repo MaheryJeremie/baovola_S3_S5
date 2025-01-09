@@ -3,6 +3,8 @@ package entity;
 import util.DatabaseConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TypeOrdinateur {
     private int id;
@@ -44,6 +46,20 @@ public class TypeOrdinateur {
             }
         }
         return null;
+    }
+    public static List<TypeOrdinateur> getAll(Connection conn) throws SQLException {
+        if (conn==null){
+            conn= DatabaseConnection.connect();
+        }
+        String sql = "SELECT * FROM TypeOrdinateur";
+        List<TypeOrdinateur> types=new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                types.add(new TypeOrdinateur(rs.getInt("id"), rs.getString("nom")));
+            }
+        }
+        return types;
     }
 
 }
