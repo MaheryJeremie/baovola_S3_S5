@@ -81,6 +81,12 @@ public class Reparation {
         }catch (Exception e){
             throw e;
         }
+        try {
+            if (resultSet != null) resultSet.close();
+            if (preparedStatement != null) preparedStatement.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return result;
     }
     public static List<Ordinateur> listeOrdiByProbleme(Connection conn,Integer idTypeProbleme) throws Exception{
@@ -109,7 +115,7 @@ public class Reparation {
         }
 
     }
-    public static List<Ordinateur> listeRetourByTypeOrdiAndProbleme(Connection conn, String idTypeOrdi, String idProbleme) {
+    public static List<Ordinateur> listeRetourByTypeOrdiAndProbleme(Connection conn, String idTypeOrdi, String idProbleme) throws Exception{
         if (conn == null) {
             conn = DatabaseConnection.connect();
         }
