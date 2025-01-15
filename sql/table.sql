@@ -38,3 +38,13 @@ CREATE TABLE Reparation (
                             date_debut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                             etat_id INT REFERENCES Etat(id)
 );
+create table Composant(
+                          id serial primary key ,
+                          nom varchar(255)
+);
+
+create table Composant_Recommande(
+                                     id serial  primary key ,
+                                     composant_id int references Composant(id),
+                                     dateInsertion date
+);
