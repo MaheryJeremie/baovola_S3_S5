@@ -21,26 +21,30 @@ public class ListeOrdinateurServlet extends HttpServlet {
         Connection conn=null;
         String idProblemeParam = request.getParameter("idProbleme");
         try {
+            conn = DatabaseConnection.connect();
+            List<Marque> listeMarques = Marque.getAll(conn);
+            List<Etat> listeEtats = Etat.getAll(conn);
+            List<TypeOrdinateur> listeTypeOrdi = TypeOrdinateur.getAll(conn);
+            request.setAttribute("listeEtats", listeEtats);
+            request.setAttribute("listeMarques", listeMarques);
+            request.setAttribute("listeTypeOrdi", listeTypeOrdi);
+
             if (isNumeric(idProblemeParam)) {
                 Integer idProbleme = Integer.parseInt(idProblemeParam);
-                conn = DatabaseConnection.connect();
-                List<Reparation> listeReparations = Reparation.getAll(conn);
+                List<Reparation> listeReparations = Reparation.listeReparationByProbleme(conn,idProbleme);
                 List<TypeProbleme> listeProblemes = TypeProbleme.getAll(conn);
-                List<TypeOrdinateur> listeTypeOrdi = TypeOrdinateur.getAll(conn);
-                List<Etat> listeEtats = Etat.getAll(conn);
-                List<Marque> listeMarques = Marque.getAll(conn);
+
                 request.setAttribute("selected",idProblemeParam);
                 request.setAttribute("listeProblemes", listeProblemes);
-                request.setAttribute("listeTypeOrdi", listeTypeOrdi);
                 request.setAttribute("listeReparations", listeReparations);
-                request.setAttribute("listeEtats", listeEtats);
-                request.setAttribute("listeMarques", listeMarques);
+
 
                 request.getRequestDispatcher("pages/reparation/liste.jsp").forward(request, response);
             } else {
-                conn = DatabaseConnection.connect();
                 List<Ordinateur> listeOrdinateurs = Reparation.getAllOrdi(conn);
                 List<TypeProbleme> listeProblemes = TypeProbleme.getAll(conn);
+                List<Reparation> listeReparations = Reparation.getAll(conn);
+                request.setAttribute("listeReparations", listeReparations);
                 request.setAttribute("listeProblemes", listeProblemes);
                 request.setAttribute("listeOrdinateurs", listeOrdinateurs);
                 request.getRequestDispatcher("pages/reparation/liste.jsp").forward(request, response);

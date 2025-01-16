@@ -309,8 +309,9 @@
                             <td><%= r.getOrdinateur().getDateAjout() %></td>
                             <td>
                                 <form action="updateEtatReparation">
-                                <select>
                                     <input type="number" name="idReparation" value="<%= r.getId() %>" hidden="true">
+
+                                <select name="idEtat">
                                     <option value=""></option>
                                     <% for(Etat e : listeEtats){ %>
                                         <option value="<%= e.getId() %>"><%= e.getNom() %></option>

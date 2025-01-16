@@ -135,6 +135,33 @@ public class Reparation {
         }
         return result;
     }
+
+    public static List<Reparation> listeReparationByProbleme(Connection conn,Integer idTypeProbleme) throws Exception{
+        if (conn==null){
+            conn= DatabaseConnection.connect();
+        }
+        if (idTypeProbleme==null){
+            return Reparation.getAll(conn);
+        }
+        else{
+            List<Reparation> result = new ArrayList<>();
+            String sql = "Select * from Reparation where type_probleme_id = ?";
+            PreparedStatement pst = null;
+            ResultSet rs = null;
+            try{
+                pst = conn.prepareStatement(sql);
+                pst.setInt(1,idTypeProbleme);
+                rs = pst.executeQuery();
+                while(rs.next()){
+                    result.add(new Reparation(rs.getInt("id"),Ordinateur.getById(conn,rs.getInt("ordinateur_id")),rs.getInt("type_probleme_id"),rs.getTimestamp("date_debut"),rs.getInt("etat_id")));
+                }
+            }catch (Exception e){
+                throw e;
+            }
+            return result;
+        }
+
+    }
     public static List<Ordinateur> listeOrdiByProbleme(Connection conn,Integer idTypeProbleme) throws Exception{
         if (conn==null){
             conn= DatabaseConnection.connect();
