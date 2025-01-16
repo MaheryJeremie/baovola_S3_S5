@@ -1,8 +1,8 @@
 <%@ page import="java.util.List" %>
-<%@ page import="entity.TypeProbleme" %>
-<%@ page import="entity.Ordinateur" %>
+
 <%@ page import="java.util.HashSet" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="entity.*" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -234,8 +234,10 @@
 
     <main class="main-content">
         <% List<TypeProbleme> listeProblemes = (List<TypeProbleme>) request.getAttribute("listeProblemes"); %>
-        <% List<Ordinateur> listeOrdinateurs = (List<Ordinateur>) request.getAttribute("listeOrdinateurs"); %>
-
+        <% List<Reparation> listeReparations = (List<Reparation>) request.getAttribute("listeReparations"); %>
+        <% List<Etat> listeEtats = (List<Etat>) request.getAttribute("listeEtats"); %>
+        <% List<Marque> listeMarques = (List<Marque>) request.getAttribute("listeMarques"); %>
+        <% List<TypeOrdinateur> listeTypeOrdi = (List<TypeOrdinateur>) request.getAttribute("listeTypeOrdi"); %>
         <section>
             <h1>Liste des ordinateurs par probleme</h1>
             <header class="top-bar">
@@ -272,9 +274,11 @@
                                 <%
                                     Set<String> marques = new HashSet<>();
                                     Set<String> types=new HashSet<>();
-                                    for (Ordinateur o : listeOrdinateurs) {
-                                        marques.add(o.getMarque().getNom());
-                                        types.add(o.getTypeOrdinateur().getNom());
+                                    for (Marque m : listeMarques) {
+                                        marques.add(m.getNom());
+                                    }
+                                    for (TypeOrdinateur t : listeTypeOrdi){
+                                        types.add(t.getNom());
                                     }
                                 %>
                                 <select id="filterBrand" class="filterMarque" onchange="applyColumnFilter('filterBrand', 1)">
@@ -293,15 +297,28 @@
                                 </select>
                             </th>
                             <th>Date</th>
+                            <th>Etat</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <% for(Ordinateur o : listeOrdinateurs){ %>
+                        <% for(Reparation r : listeReparations){ %>
                         <tr>
-                            <td><%=o.getModele().getNom()%></td>
-                            <td><%=o.getMarque().getNom()%></td>
-                            <td><%= o.getTypeOrdinateur().getNom() %></td>
-                            <td><%= o.getDateAjout() %></td>
+                            <td><%=r.getOrdinateur().getModele().getNom()%></td>
+                            <td><%=r.getOrdinateur().getMarque().getNom()%></td>
+                            <td><%= r.getOrdinateur().getTypeOrdinateur().getNom() %></td>
+                            <td><%= r.getOrdinateur().getDateAjout() %></td>
+                            <td>
+                                <form action="updateEtatReparation">
+                                <select>
+                                    <input type="number" name="idReparation" value="<%= r.getId() %>" hidden="true">
+                                    <option value=""></option>
+                                    <% for(Etat e : listeEtats){ %>
+                                        <option value="<%= e.getId() %>"><%= e.getNom() %></option>
+                                    <% } %>
+                                    <input type="submit">
+                                </select>
+                                </form>
+                            </td>
                         </tr>
                         <% } %>
                         </tbody>

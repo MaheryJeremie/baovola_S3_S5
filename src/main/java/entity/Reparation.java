@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Reparation {
     private int id;
-    private int idOrdinateur;
+    private Ordinateur ordinateur;
     private int idTypeProbleme;
     private Timestamp dateDebut;
     private int idEtat;
@@ -21,12 +21,12 @@ public class Reparation {
         this.id = id;
     }
 
-    public int getIdOrdinateur() {
-        return idOrdinateur;
+    public Ordinateur getOrdinateur() {
+        return ordinateur;
     }
 
-    public void setIdOrdinateur(int idOrdinateur) {
-        this.idOrdinateur = idOrdinateur;
+    public void setOrdinateur(Ordinateur ordinateur) {
+        this.ordinateur = ordinateur;
     }
 
     public int getIdTypeProbleme() {
@@ -56,9 +56,9 @@ public class Reparation {
     public Reparation() {
     }
 
-    public Reparation(int id, int idOrdinateur, int idTypeProbleme, Timestamp dateDebut, int idEtat) {
+    public Reparation(int id, Ordinateur idOrdinateur, int idTypeProbleme, Timestamp dateDebut, int idEtat) {
         this.id = id;
-        this.idOrdinateur = idOrdinateur;
+        this.ordinateur = idOrdinateur;
         this.idTypeProbleme = idTypeProbleme;
         this.dateDebut = dateDebut;
         this.idEtat = idEtat;
@@ -74,14 +74,40 @@ public class Reparation {
             pst = conn.prepareStatement(sql);
             pst.setInt(1,etat);
             pst.setInt(2,id);
-            pst.executeUpdate();
+            pst.execute();
         }catch (Exception e){
             throw e;
         }finally {
-            if (pst!=null){
+            if(pst!=null){
                 pst.close();
             }
         }
+    }
+
+    public static List<Reparation> getAll(Connection conn) throws Exception{
+        if (conn==null){
+            conn= DatabaseConnection.connect();
+        }
+        List<Reparation> result = new ArrayList<>();
+        String sql = "Select * from Reparation";
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try{
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while(rs.next()){
+                result.add(new Reparation(rs.getInt("id"),Ordinateur.getById(conn,rs.getInt("ordinateur_id")),rs.getInt("type_probleme_id"),rs.getTimestamp("date_debut"),rs.getInt("etat_id")));
+            }
+        }catch (Exception e){
+            throw e;
+        }
+        try {
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return result;
     }
 
     public static List<Ordinateur> getAllOrdi(Connection conn) throws Exception{

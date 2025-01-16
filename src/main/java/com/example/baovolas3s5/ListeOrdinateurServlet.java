@@ -1,8 +1,6 @@
 package com.example.baovolas3s5;
 
-import entity.Ordinateur;
-import entity.Reparation;
-import entity.TypeProbleme;
+import entity.*;
 import util.DatabaseConnection;
 
 import javax.servlet.annotation.WebServlet;
@@ -12,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/listeOrdinateur")
@@ -25,11 +24,18 @@ public class ListeOrdinateurServlet extends HttpServlet {
             if (isNumeric(idProblemeParam)) {
                 Integer idProbleme = Integer.parseInt(idProblemeParam);
                 conn = DatabaseConnection.connect();
-                List<Ordinateur> listeOrdinateurs = Reparation.listeOrdiByProbleme(conn, idProbleme);
+                List<Reparation> listeReparations = Reparation.getAll(conn);
                 List<TypeProbleme> listeProblemes = TypeProbleme.getAll(conn);
+                List<TypeOrdinateur> listeTypeOrdi = TypeOrdinateur.getAll(conn);
+                List<Etat> listeEtats = Etat.getAll(conn);
+                List<Marque> listeMarques = Marque.getAll(conn);
                 request.setAttribute("selected",idProblemeParam);
                 request.setAttribute("listeProblemes", listeProblemes);
-                request.setAttribute("listeOrdinateurs", listeOrdinateurs);
+                request.setAttribute("listeTypeOrdi", listeTypeOrdi);
+                request.setAttribute("listeReparations", listeReparations);
+                request.setAttribute("listeEtats", listeEtats);
+                request.setAttribute("listeMarques", listeMarques);
+
                 request.getRequestDispatcher("pages/reparation/liste.jsp").forward(request, response);
             } else {
                 conn = DatabaseConnection.connect();
