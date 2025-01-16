@@ -3,6 +3,8 @@ package entity;
 import util.DatabaseConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Etat {
     private int id;
@@ -55,6 +57,28 @@ public class Etat {
                 ps.close();
             }
         }
+    }
+
+    public static List<Etat> getAll(Connection conn) throws Exception{
+        List<Etat> result = new ArrayList<>();
+        if (conn==null){
+            conn= DatabaseConnection.connect();
+        }
+        String sql = "SELECT * FROM Etat";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        try{
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                result.add(new Etat(rs.getInt("id"), rs.getString("nom")));
+            }
+        }catch (Exception e){
+            throw e;
+        }finally {
+            if (ps!=null){
+                ps.close();
+            }
+        }
+        return result;
     }
 
     public static Etat getById(Connection conn, int id) throws SQLException {
