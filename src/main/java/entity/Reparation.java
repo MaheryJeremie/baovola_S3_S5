@@ -64,6 +64,26 @@ public class Reparation {
         this.idEtat = idEtat;
     }
 
+    public static void updateEtat(Connection conn,int etat, int id) throws Exception {
+        if(conn == null){
+            conn = DatabaseConnection.connect();
+        }
+        PreparedStatement pst = null;
+        String sql = "update Reparation set etat_id = ? where id = ?";
+        try{
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1,etat);
+            pst.setInt(2,id);
+            pst.executeUpdate();
+        }catch (Exception e){
+            throw e;
+        }finally {
+            if (pst!=null){
+                pst.close();
+            }
+        }
+    }
+
     public static List<Ordinateur> getAllOrdi(Connection conn) throws Exception{
         if (conn==null){
             conn= DatabaseConnection.connect();
